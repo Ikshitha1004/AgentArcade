@@ -1,18 +1,19 @@
 import time
 import matplotlib.pyplot as plt
 from HC.HC import HillClimbing  # Import Hill Climbing class
-import random
+from tsp_env import TravellingSalesmanEnv 
 
+# Load TSP environment from file
+tsp_env = TravellingSalesmanEnv("ch130.tsp")
 
-num_cities = 200
-random.seed(42) 
-routes = [[random.randint(10, 100) if i != j else 0 for j in range(num_cities)] for i in range(num_cities)]
+# Extract the distance matrix and number of cities
+dist_matrix = tsp_env.dist_matrix
+num_cities = tsp_env.nPoints  
 
-# Initialize the solver
-tsp_solver = HillClimbing(num_cities, routes)
+# Initialize the solver with the environment's distance matrix
+tsp_solver = HillClimbing(num_cities, dist_matrix)
 
-
-Timeout = 1000  # 10 seconds per run
+# Experiment settings
 num_runs = 5
 convergence_times = []
 best_distances = []
