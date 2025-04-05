@@ -11,6 +11,7 @@ This repository implements four classical search and optimization algorithms app
 
 ---
 
+
 ## 1. FrozenLake 
 
 ### Environment Description
@@ -54,6 +55,15 @@ The goal of the Travelling Salesman Problem (TSP) is to find the shortest possib
 - **Number of Cities**: 130
 - **Distance Metric**: Euclidean distance between 2D city coordinates
 - **Input Format**: Standard `.tsp` file (parsed into coordinates and a distance matrix)
+- **Objective function**:
+
+  f(tour) =<sub>  i=1</sub> Σ<sup> n</sup> distance(city<sub>i</sub>, city<sub>i+1</sub>) + distance(city<sub>n</sub>, city<sub>1</sub>)
+
+
+
+
+
+
 
 ---
 
@@ -88,19 +98,31 @@ pip install -r requirements.txt
 ```
 
 ### 3. Run Algorithms
-Execute any algorithm script:
 
-# Simulated Annealing (TSP Optimization)
-```
+
+####  FrozenLake Search Agents
+
+Navigate to the `search_agents` folder and run:
+  ```bash
+  cd search_agents
+ python main.py --agent bnb      # Branch and Bound
+ python main.py --agent ida     # IDA*
+  ```
+
+
+###  TSP Optimization Algorithms
+
+Navigate to the `soln_agents` folder:
+```bash
 cd soln_agents
-python run_SA.py
+python main.py --agent sa      # Simulated Annealing
+python main.py --agent hc      # Hill Climbing
+ 
 ```
 
-# Branch and Bound
+## PPT:
 
-```
-cd search_agents
-python run_BnB.py
-```
+You can view or download the PowerPoint presentation from the link below:
 
+[Download the Presentation](https://github.com/Ikshitha1004/AgentArcade/blob/main/AI_ASSIGNMENT2.pptx)
 
