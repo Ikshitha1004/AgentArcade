@@ -1,71 +1,75 @@
-import math
 import time
-from search_agents.base.search_agent import SearchAgent
+from search_agents.base.search_agent import SearchAgent  # Update if your base class is elsewhere
 
 class IterativeDeepeningAStar(SearchAgent):
-    def __init__(self, env, timeout=60):
-        super().__init__(env, timeout)
-        self.U = math.inf
+    def __init__(self, env):
+        self.env = env
+        self.goal_position = env.observation_space.n - 1
+        self.size = int(env.observation_space.n ** 0.5)
         self.q = 0
-        self.goal_position = env.observation_space.n - 1 
-        self.mini = self.heuristic(self.env.reset()[0])
-        self.start_time = time.time()  
         self.execution_time = 0
+        self.final_path = []  # To store the path (state, action)
 
     def heuristic(self, state):
-        """ Heuristic function: Manhattan distance to the goal state. """
-        grid_size = int(math.sqrt(self.env.observation_space.n)) 
-        goal_x, goal_y = divmod(self.goal_position, grid_size)
-        state_x, state_y = divmod(state, grid_size)
-        return abs(goal_x - state_x) + abs(goal_y - state_y)  
+        x1, y1 = divmod(state, self.size)
+        x2, y2 = divmod(self.goal_position, self.size)
+        return abs(x1 - x2) + abs(y1 - y2)
 
     def is_goal(self, state):
-        """ Check if the current state is the goal state."""
         return state == self.goal_position
 
+    def is_pit(self, state):
+        row, col = divmod(state, self.size)
+        return self.env.unwrapped.desc[row][col] == b'H'
+
     def expand(self, state):
-        """ Return the possible actions from the given state."""
-        return list(range(self.env.action_space.n))
+        successors = []
+        for action in range(self.env.action_space.n):
+            self.env.unwrapped.s = state
+            next_state, _, done, _, _ = self.env.step(action)
+            if not self.is_pit(next_state):
+                successors.append((next_state, action))
+        return successors
 
     def driver(self):
         start_time = time.time()
-        flag = False
-        
-        while not flag and (time.time() - start_time) < self.timeout:
-            self.U = self.mini
-            self.mini = math.inf
-            visited = set()
-            flag = self.IDA(0, self.mini, self.U, self.env.reset()[0],visited)
-        self.execution_time = time.time() - self.start_time
+        threshold = self.heuristic(0)
+        path = [(0, None)]
+        visited = set()
+        while True:
+            t = self.IDA(0, threshold, 0, visited, path)
+            if isinstance(t, list):
+                self.final_path = t
+                self.q = len(t) - 1  # Exclude dummy first step
+                break
+            if t == float('inf'):
+                break
+            threshold = t
+        self.execution_time = time.time() - start_time
 
-    def IDA(self, q, mini, U, state, visited):
+    def IDA(self, g, threshold, state, visited, path):
+        f = g + self.heuristic(state)
+        if f > threshold:
+            return f
         if self.is_goal(state):
-            self.U = q
-            return True
-        
-        for action in self.expand(state):
-            if (state,action) in visited:
-             continue
-            visited.add((state,action))
-            prev_state = state 
-            next_state, reward, terminated, turcated, _ = self.env.step(action)
-            done = turcated or terminated
-            
-            if done and next_state != self.goal_position: 
-                self.env.env.s = prev_state
-                continue
-            
-            if q + 1 + self.heuristic(next_state) <= U:
-                self.q = q + 1
-                if self.IDA(self.q, mini, U, next_state,visited):
-                    return True
-            else:
-                if q + 1 + self.heuristic(next_state) < self.mini:
-                    self.mini = q + 1 + self.heuristic(next_state)
-            
-            self.env.env.s = prev_state 
-        
-        return False
-       
+            return path.copy()
+        min_threshold = float('inf')
+        visited.add(state)
+
+        for succ, action in self.expand(state):
+            if succ not in visited:
+                path.append((succ, action))
+                t = self.IDA(g + 1, threshold, succ, visited, path)
+                if isinstance(t, list):
+                    return t
+                if t < min_threshold:
+                    min_threshold = t
+                path.pop()
+        visited.remove(state)
+        return min_threshold
+
     def get_best_cost(self):
-     return self.U
+        return self.q
+
+    def get_final_path(self):
+        return self.final_path
