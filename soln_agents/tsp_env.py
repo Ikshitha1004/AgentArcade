@@ -1,3 +1,5 @@
+##module to extract the tsp env from the given repo
+
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -12,14 +14,14 @@ class TravellingSalesmanEnv:
         """Initialize the TSP environment."""
         self.dist_matrix = None
 
-        # Read raw data
+       
         self.file_name = name_tsp
         with open(self.file_name, 'r') as file:
             data = file.read()
 
         self.lines = data.splitlines()
 
-        # Store dataset information
+       
         self.name = self.lines[0].split(': ')[1]
         self.nPoints = int(self.lines[3].split(': ')[1])
 
@@ -46,14 +48,14 @@ def plot_tsp_env(env):
     """Plot the TSP environment (just cities and connections)."""
     plt.figure(figsize=(8, 6))
 
-    # Extract coordinates
+  
     x_coords = env.points[:, 1]
     y_coords = env.points[:, 2]
 
-    # Plot cities
+   
     plt.scatter(x_coords, y_coords, c='red', marker='o', label="Cities")
 
-    # Connect each city with every other city (fully connected graph)
+   
     for i in range(env.nPoints):
         for j in range(i + 1, env.nPoints):
             plt.plot([x_coords[i], x_coords[j]], [y_coords[i], y_coords[j]], 'gray', alpha=0.3)
@@ -67,19 +69,3 @@ def plot_tsp_env(env):
     plt.legend()
     plt.grid()
     plt.show()
-
-if __name__ == "__main__":
- print("hii from tsp env")
-#     # Load TSP Environment from a File
-#     tsp_env = TravellingSalesmanEnv("ch130.tsp")
-
-#     # Plot the environment (before solving)
-#     hc_solver = HillClimbing(130,tsp_env.dist_matrix)
-#     best_path, best_distance = hc_solver.solve()
-
-#     print(f"Best Path: {best_path}")
-#     print(f"Best Distance: {best_distance}")
-
-#     # Plot best solution
-#     #plot_solution(tsp_env, best_path)
-#     plot_tsp_env(tsp_env)
