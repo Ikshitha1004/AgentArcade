@@ -88,19 +88,25 @@ pip install -r requirements.txt
 ```
 
 ### 3. Run Algorithms
-Execute any algorithm script:
 
-# Simulated Annealing (TSP Optimization)
-```
+####  FrozenLake Search Agents
+
+Navigate to the `search_agents` folder and run:
+  ```bash
+  cd soln_agents
+ python main.py --agent bnb      # Branch and Bound
+ python main.py --agent ida     # IDA*
+  ```
+
+
+###  TSP Optimization Algorithms
+
+Navigate to the `soln_agents` folder:
+```bash
 cd soln_agents
-python run_SA.py
-```
-
-# Branch and Bound
-
-```
-cd search_agents
-python run_BnB.py
+python main.py --agent sa      # Simulated Annealing
+python main.py --agent hc      # Hill Climbing
+ 
 ```
 
 
