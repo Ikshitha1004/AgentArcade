@@ -1,5 +1,5 @@
 import time
-from search_agents.base.search_agent import SearchAgent  # Update if your base class is elsewhere
+from base.search_agent import SearchAgent  # Update if your base class is elsewhere
 
 class IterativeDeepeningAStar(SearchAgent):
     def __init__(self, env):
