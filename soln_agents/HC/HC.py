@@ -6,7 +6,7 @@ from TSP.TSP import TravellingSalesman
 class HillClimbing(TravellingSalesman):
     def __init__(self, no_of_cities, routes,points):
         super().__init__(no_of_cities, routes)
-        self.frames = []  # to store image paths
+        self.frames = []  
         self.cities = points
         self.image_dir = "hc_frames"
         os.makedirs(self.image_dir, exist_ok=True)
@@ -31,7 +31,7 @@ class HillClimbing(TravellingSalesman):
         for i in range(len(path) - 1):
             if self.routes[path[i]][path[i + 1]] == float('inf'):
                 return False
-        if self.routes[path[-1]][path[0]] == float('inf'):  # Check return to start
+        if self.routes[path[-1]][path[0]] == float('inf'):  
             return False
         return True
     def neighborhood(self, path):
@@ -42,13 +42,13 @@ class HillClimbing(TravellingSalesman):
                 new_path = path[:]
                 new_path[i], new_path[j] = new_path[j], new_path[i]
                 
-                if self.is_valid(new_path):  # Only keep valid paths
+                if self.is_valid(new_path): 
                     neighbors.append(new_path)
                     
         return neighbors
 
     def solve(self, save_gif=False, gif_name="hill_climbing_result.gif"):
-        self.frames = []  # reset frames
+        self.frames = [] 
         os.makedirs(self.image_dir, exist_ok=True)
 
         current_solution = self.construct_initial_path()
@@ -80,5 +80,4 @@ class HillClimbing(TravellingSalesman):
     def create_gif(self, gif_name):
         """Create and save a GIF from stored image frames."""
         images = [imageio.imread(frame) for frame in self.frames]
-        imageio.mimsave(gif_name, images, duration=0.7)  # duration between frames
-
+        imageio.mimsave(gif_name, images, duration=0.7)  
