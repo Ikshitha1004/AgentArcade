@@ -1,96 +1,98 @@
-
-import numpy as np
-import time
+# SA.py
+import os
 import random
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+import imageio
+from TSP.TSP import TravellingSalesman
 
-# --- Parser for .tsp file ---
-def parse_tsp_file(filepath):
-    with open(filepath, 'r') as f:
-        lines = f.readlines()
+class SimulatedAnnealing(TravellingSalesman):
+    def __init__(self, no_of_cities, routes, points):
+        super().__init__(no_of_cities, routes)
+        self.points = points
+        self.image_dir = "sa_frames"
+        os.makedirs(self.image_dir, exist_ok=True)
+        self.frames = []
 
-    coords = []
-    start = False
-    for line in lines:
-        if "NODE_COORD_SECTION" in line:
-            start = True
-            continue
-        if "EOF" in line or line.strip() == "":
-            break
-        if start:
-            parts = line.strip().split()
-            if len(parts) >= 3:
-                x = float(parts[1])
-                y = float(parts[2])
-                coords.append((x, y))
+    def cleanup_frames(self):
+        """Remove old frames before a new run."""
+        if os.path.exists(self.image_dir):
+            for f in os.listdir(self.image_dir):
+                os.remove(os.path.join(self.image_dir, f))
+        self.frames = []
 
-    coords = np.array(coords)
-    n = len(coords)
-    adj_matrix = np.zeros((n, n))
+    def is_valid(self, path):
+        for i in range(len(path) - 1):
+            if self.routes[path[i]][path[i + 1]] == float('inf'):
+                return False
+        if self.routes[path[-1]][path[0]] == float('inf'):
+            return False
+        return True
 
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                adj_matrix[i][j] = np.linalg.norm(coords[i] - coords[j])
+    def plot_path(self, path, step):
+        """Create and save plot of the path."""
+        x = [self.points[i][0] for i in path] + [self.points[path[0]][0]]
+        y = [self.points[i][1] for i in path] + [self.points[path[0]][1]]
 
-    return adj_matrix, coords
+        plt.figure(figsize=(6, 6))
+        plt.plot(x, y, marker='o', color='blue')
+        for i, city in enumerate(path):
+            plt.text(self.points[city][0], self.points[city][1], str(city), fontsize=9)
+        plt.title(f"Simulated Annealing Step {step}")
+        path_img = os.path.join(self.image_dir, f"frame_{step}.png")
+        plt.savefig(path_img)
+        plt.close()
+        self.frames.append(path_img)
 
-# --- Cost computation ---
-def total_distance(path, adj_matrix):
-    dist = 0.0
-    for i in range(len(path)):
-        dist += adj_matrix[path[i]][path[(i + 1) % len(path)]]
-    return dist
+    def create_gif(self, gif_path="simulated_annealing_result.gif"):
+        """Compile saved frames into a GIF."""
+        images = [imageio.imread(frame) for frame in self.frames]
+        imageio.mimsave(gif_path, images, duration=0.5)
 
-def simulated_annealing(adj_matrix, initial_temp=1000, final_temp=1, alpha=1, max_iter=1000000, timeout=600):
-    n = len(adj_matrix)
-    current_path = list(range(n))
-    np.random.shuffle(current_path)
-    current_cost = total_distance(current_path, adj_matrix)
-    best_path = list(current_path)
-    best_cost = current_cost
+    def solve(self, initial_temp=10000, final_temp=1e-7, alpha=0.95, max_iter=100000, timeout=60, save_gif=False):
+        
+              
+        self.cleanup_frames()
+        n = self.n
+        current_path = self.construct_initial_path()
+        current_cost = self.calculate_distance(current_path)
+        best_path = list(current_path)
+        best_cost = current_cost
 
-    start_time = time.time()
-    T = initial_temp
-    iteration = 0
+        T = initial_temp
+        start_time = time.time()
+        step = 0
+        self.plot_path(current_path, step)
+        step += 1
 
-    while T > final_temp and iteration < max_iter:
-        if time.time() - start_time > timeout:
-            break
+        while T > final_temp and step < max_iter:
+            if time.time() - start_time > timeout:
+                break
 
-        i, j = random.sample(range(n), 2)
-        new_path = list(current_path)
-        new_path[i], new_path[j] = new_path[j], new_path[i]
-        new_cost = total_distance(new_path, adj_matrix)
+            i, j = random.sample(range(n), 2)
+            new_path = list(current_path)
+            new_path[i], new_path[j] = new_path[j], new_path[i]
 
-        delta = new_cost - current_cost
-        if delta < 0 or np.random.rand() < np.exp(-delta / T):
-            current_path = new_path
-            current_cost = new_cost
-            if new_cost < best_cost:
-                best_path = new_path
-                best_cost = new_cost
+            if not self.is_valid(new_path):
+                continue
 
-        T -= alpha
-        iteration += 1
+            new_cost = self.calculate_distance(new_path)
+            delta = new_cost - current_cost
 
-    return best_cost, time.time() - start_time, best_path
+            if delta < 0 or random.random() < np.exp(-delta / T):
+                current_path = new_path
+                current_cost = new_cost
+                self.plot_path(current_path, step)
+                step += 1
 
-def run_tsp_experiment_from_file(filepath, runs=5, timeout=600):
-    adj_matrix, coords = parse_tsp_file(filepath)
+                if new_cost < best_cost:
+                    best_path = new_path
+                    best_cost = new_cost
 
-    times = []
-    best_costs = []
+            T *= alpha
 
-    for run in range(runs):
-        print(f"Run {run+1}...")
-        best_cost, elapsed, _ = simulated_annealing(adj_matrix, timeout=timeout)
-        times.append(elapsed)
-        best_costs.append(best_cost)
-        print(f"  Time taken: {elapsed:.2f}s | Best cost: {best_cost:.4f}")
+        if save_gif:
+            self.create_gif()
 
-    avg_time = np.mean(times)
-    avg_cost = np.mean(best_costs)
-
-    print(f"\nAverage time over {runs} runs: {avg_time:.2f} seconds")
-    print(f"Average best cost: {avg_cost:.4f}")
-    return times, best_costs
+        return best_path, best_cost, time.time() - start_time
