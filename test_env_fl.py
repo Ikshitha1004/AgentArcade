@@ -1,7 +1,7 @@
 import gym
 from gymnasium.envs.toy_text.frozen_lake import generate_random_map
 import numpy as np
-from search_agents.BnB.BnB import BranchAndBound
+#from search_agents.BnB.BnB import BranchAndBound
 from search_agents.IDA.IDA import IterativeDeepeningAStar
 import matplotlib.pyplot as plt
 
