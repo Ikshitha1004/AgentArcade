@@ -99,7 +99,6 @@ pip install -r requirements.txt
 
 ### 3. Run Algorithms
 
-
 ####  FrozenLake Search Agents
 
 Navigate to the `search_agents` folder and run:
