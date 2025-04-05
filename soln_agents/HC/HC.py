@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 import imageio
 import os
+import time
 from TSP.TSP import TravellingSalesman
 
 class HillClimbing(TravellingSalesman):
-    def __init__(self, no_of_cities, routes,points):
+    def __init__(self, no_of_cities, routes, points):
         super().__init__(no_of_cities, routes)
-        self.frames = []  
+        self.frames = []
         self.cities = points
         self.image_dir = "hc_frames"
         os.makedirs(self.image_dir, exist_ok=True)
@@ -25,31 +26,33 @@ class HillClimbing(TravellingSalesman):
         plt.savefig(filepath)
         plt.close()
         self.frames.append(filepath)
-    
+
     def is_valid(self, path):
         """Check if the given path is valid in the graph."""
         for i in range(len(path) - 1):
             if self.routes[path[i]][path[i + 1]] == float('inf'):
                 return False
-        if self.routes[path[-1]][path[0]] == float('inf'):  
+        if self.routes[path[-1]][path[0]] == float('inf'):
             return False
         return True
+
     def neighborhood(self, path):
-   
         neighbors = []
         for i in range(len(path)):
             for j in range(i + 1, len(path)):
                 new_path = path[:]
                 new_path[i], new_path[j] = new_path[j], new_path[i]
-                
-                if self.is_valid(new_path): 
+
+                if self.is_valid(new_path):
                     neighbors.append(new_path)
-                    
         return neighbors
 
     def solve(self, save_gif=False, gif_name="hill_climbing_result.gif"):
-        self.frames = [] 
+        self.frames = []
         os.makedirs(self.image_dir, exist_ok=True)
+
+        start_time = time.perf_counter()
+        time_limit = 600  # 10 minutes
 
         current_solution = self.construct_initial_path()
         current_distance = self.calculate_distance(current_solution)
@@ -57,6 +60,10 @@ class HillClimbing(TravellingSalesman):
 
         iteration = 1
         while True:
+            if time.perf_counter() - start_time > time_limit:
+                print("Time limit exceeded (10 minutes).")
+                break
+
             neighbors = self.neighborhood(current_solution)
             if not neighbors:
                 break
@@ -74,10 +81,10 @@ class HillClimbing(TravellingSalesman):
         if save_gif:
             self.create_gif(gif_name)
 
-        return current_solution, current_distance
-
+        total_time = time.perf_counter() - start_time
+        return current_solution, current_distance, total_time
 
     def create_gif(self, gif_name):
         """Create and save a GIF from stored image frames."""
         images = [imageio.imread(frame) for frame in self.frames]
-        imageio.mimsave(gif_name, images, duration=0.7)  
+        imageio.mimsave(gif_name, images, duration=0.7)

@@ -61,13 +61,13 @@ class SimulatedAnnealing(TravellingSalesman):
         best_cost = current_cost
 
         T = initial_temp
-        start_time = time.time()
+        start_time = time.perf_counter()
         step = 0
         self.plot_path(current_path, step)
         step += 1
 
         while T > final_temp and step < max_iter:
-            if time.time() - start_time > timeout:
+            if time.perf_counter() - start_time > timeout:
                 break
 
             i, j = random.sample(range(n), 2)
@@ -95,4 +95,4 @@ class SimulatedAnnealing(TravellingSalesman):
         if save_gif:
             self.create_gif()
 
-        return best_path, best_cost, time.time() - start_time
+        return best_path, best_cost, time.perf_counter() - start_time

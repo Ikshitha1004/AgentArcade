@@ -32,7 +32,8 @@ class IterativeDeepeningAStar(SearchAgent):
         return successors
 
     def driver(self):
-        start_time = time.time()
+        self.env.reset()
+        start_time = time.perf_counter()
         threshold = self.heuristic(0)
         path = [(0, None)]
         visited = set()
@@ -45,7 +46,7 @@ class IterativeDeepeningAStar(SearchAgent):
             if t == float('inf'):
                 break
             threshold = t
-        self.execution_time = time.time() - start_time
+        self.execution_time = time.perf_counter() - start_time
 
     def IDA(self, g, threshold, state, visited, path):
         f = g + self.heuristic(state)
