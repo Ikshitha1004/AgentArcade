@@ -93,7 +93,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--agent", type=str, required=True, choices=["sa", "hc"],
                         help="Choose agent: 'sa' for Simulated Annealing or 'hc' for Hill Climbing")
-    parser.add_argument("--file", type=str, default="ch130.tsp",
+    parser.add_argument("--file", type=str, default="tsp_datasets/ch130.tsp",
                         help="Path to TSP file (default: ch130.tsp)")
     args = parser.parse_args()
 

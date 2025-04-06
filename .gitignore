@@ -346,3 +346,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+hc_frames/
+
