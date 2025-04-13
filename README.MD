@@ -123,5 +123,5 @@ python main.py --agent hc      # Hill Climbing
 
 You can view or download the PowerPoint presentation from the link below:
 
-[Download the Presentation](https://github.com/Ikshitha1004/AgentArcade/blob/main/AI_ASSIGNMENT2.pptx)
+[ Presentation](https://github.com/Ikshitha1004/AgentArcade/blob/main/AI_ASSIGNMENT-2.pptx)
 
