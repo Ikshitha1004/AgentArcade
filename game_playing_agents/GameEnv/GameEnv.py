@@ -35,7 +35,7 @@ class SlimeVolleyEnvWrapper(GameEnv):
         return env_copy
 
     def evaluate(self, state):
-        obs = state.observation  
+        obs = self.env.state.observation  
         return -abs(obs[0] - obs[2])  # ball_x - slime_x
 
     def is_terminal(self, state, depth):
@@ -51,13 +51,15 @@ class ChessEnvWrapper(GameEnv):
 
      def simulate_action(self, state, action, is_maximizing):
          import copy
+         if action is None:
+          return state 
          env_copy = copy.deepcopy(self.env)
          obs, reward, done, info = env_copy.step(action)
          return env_copy
 
      def evaluate(self, state):
          # Simplified evaluation from UCI representation
-         board = state.board
+         board = state.unwrapped._board
          return self.material_score(board)
 
      def material_score(self, board):
@@ -71,4 +73,4 @@ class ChessEnvWrapper(GameEnv):
          return score
 
      def is_terminal(self, state, depth):
-         return depth == 0 or state.done
+         return depth == 0 
