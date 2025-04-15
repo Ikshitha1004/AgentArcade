@@ -1,6 +1,7 @@
 import gym
 import gym_chess 
 from MiniMax.Minimax import Minimax
+from AlphaBeta.alphabeta import AlphaBeta
 from GameEnv.GameEnv import ChessEnvWrapper
 import time
 from gym.wrappers import Monitor  
@@ -21,8 +22,10 @@ def main():
     wrapped_env = ChessEnvWrapper(raw_env)
 
     # 2. Create two Minimax agents (both use same logic but alternate roles)
-    white_agent = Minimax(max_depth=2, env=wrapped_env)
-    black_agent = Minimax(max_depth=2, env=wrapped_env)
+    #white_agent = Minimax(max_depth=2, env=wrapped_env)
+    #black_agent = Minimax(max_depth=2, env=wrapped_env)
+    white_agent = AlphaBeta(max_depth=2, env=wrapped_env)
+    black_agent = AlphaBeta(max_depth=2, env=wrapped_env)
 
     # 3. Alternate turns until game ends
     done = False
@@ -34,10 +37,13 @@ def main():
 
         if turn % 2 == 0:
             # White's turn (maximizing)
-            best_action = white_agent.get_best_action(raw_env)
+            #best_action = white_agent.get_best_action(raw_env)
+            best_action = white_agent.get_best_action(raw_env,is_max=True)
+
         else:
             # Black's turn (minimizing) — reverse evaluation in get_best_action
-            best_action = black_agent.get_best_action(raw_env)
+            #best_action = black_agent.get_best_action(raw_env)
+            best_action= black_agent.get_best_action(raw_env,is_max=False)
 
         print(f"Best action: {best_action}")
         if best_action is not None:
