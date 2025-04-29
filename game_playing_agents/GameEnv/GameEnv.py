@@ -73,4 +73,5 @@ class ChessEnvWrapper(GameEnv):
          return score
 
      def is_terminal(self, state, depth):
-         return depth == 0 
+        board = state.unwrapped._board
+        return board.is_game_over() or depth==0
