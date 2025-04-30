@@ -11,8 +11,11 @@ class Minimax:
     def __init__(self, max_depth, env: GameEnv):
         self.max_depth = max_depth
         self.env = env
+        self.nodes_explored = 0  # Counter to track nodes
 
     def minimax(self, state, depth, is_max):
+        self.nodes_explored += 1  # Increment for each node visited
+
         board = state.unwrapped._board
 
         if depth == 0 or self.env.is_terminal(state, depth):
@@ -44,6 +47,7 @@ class Minimax:
                     best_action = move
             return min_eval, best_action
 
-    def get_best_action(self, state,is_max):
-        _, best_action = self.minimax(state, self.max_depth,is_max)
+    def get_best_action(self, state, is_max):
+        self.nodes_explored = 0  # Reset counter at each top-level call
+        _, best_action = self.minimax(state, self.max_depth, is_max)
         return best_action

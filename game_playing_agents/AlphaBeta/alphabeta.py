@@ -6,13 +6,15 @@ sys.path.append(os.path.abspath("../GameEnv"))
 
 from GameEnv import GameEnv
 import chess
-
 class AlphaBeta:
     def __init__(self, max_depth, env: GameEnv):
         self.max_depth = max_depth
         self.env = env
+        self.nodes_explored = 0  # Counter to track nodes
 
     def alpha_beta(self, state, depth, alpha, beta, is_max):
+        self.nodes_explored += 1  # Increment for each node visited
+
         board = state.unwrapped._board
 
         if depth == 0 or self.env.is_terminal(state, depth):
@@ -50,6 +52,7 @@ class AlphaBeta:
                     break  # α cutoff
             return min_eval, best_action
 
-    def get_best_action(self, state,is_max):
+    def get_best_action(self, state, is_max):
+        self.nodes_explored = 0  # Reset counter at each top-level call
         _, best_action = self.alpha_beta(state, self.max_depth, float('-inf'), float('inf'), is_max)
         return best_action
