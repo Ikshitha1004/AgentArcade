@@ -44,6 +44,6 @@ class Minimax:
                     best_action = move
             return min_eval, best_action
 
-    def get_best_action(self, state):
-        _, best_action = self.minimax(state, self.max_depth, True)
+    def get_best_action(self, state,is_max):
+        _, best_action = self.minimax(state, self.max_depth,is_max)
         return best_action
