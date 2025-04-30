@@ -145,7 +145,7 @@ Navigate to the `game_playing_agents` folder and run:
 ```bash
 cd game_playing_agents
 python main.py --agent minimax     # K-ply Minimax
-python main.py --agent alpha-beta  # Alpha-Beta Pruning
+python main.py --agent alphabeta  # Alpha-Beta Pruning
 ```
 
 ---
@@ -154,5 +154,6 @@ python main.py --agent alpha-beta  # Alpha-Beta Pruning
 
 You can view or download the PowerPoint presentation from the link below:
 
-[Presentation](https://github.com/Ikshitha1004/AgentArcade/blob/main/AI_ASSIGNMENT-2.pptx)
+[Presentation1](https://github.com/Ikshitha1004/AgentArcade/blob/main/AI_ASSIGNMENT-2.pptx)
+[Presentation2](https://github.com/Ikshitha1004/AgentArcade/blob/main/AI_Assignment_3.pptx)
 
